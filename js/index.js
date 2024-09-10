@@ -1,5 +1,3 @@
-
-
 const states = {
     "California": { latitude: 37.7749, longitude: -122.4194 },
     "Texas": { latitude: 31.0545, longitude: -97.5664 },
@@ -11,80 +9,43 @@ const states = {
     "Michigan": { latitude: 42.7312, longitude: -84.3586 },
     "Georgia": { latitude: 33.0406, longitude: -84.2377 },
     "Washington": { latitude: 47.6062, longitude: -122.3321 }
-  };
-  
-  // Function to construct the API URL with multiple coordinates and daily rain
-   function buildWeatherUrl(selectedStates){
-    const latitudes = [];
-    const longitudes = [];
-    for (const stateName of selectedStates) {
-      const coords = states[stateName];
-      if (coords) {
-        latitudes.push(coords.latitude);
-        longitudes.push(coords.longitude);
-      } else {
-        console.error(`Coordinates not found for state: ${stateName}`);
-      }
+};
+
+const stateSelect = document.getElementById('state-select');
+const weatherInfo = document.getElementById('weather-info');
+
+// Populate the dropdown with states
+for (const state in states) {
+    const option = document.createElement('option');
+    option.value = state;
+    option.textContent = state;
+    stateSelect.appendChild(option);
+}
+
+const fetchWeatherData = async (latitude, longitude) => {
+    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=relative_humidity_2m&daily=precipitation_sum&temperature_unit=fahrenheit&timezone=America%2FNew_York`);
+    const data = await response.json();
+    return data;
+};
+
+const displayWeatherData = (state, weatherData) => {
+    const hourlyHumidity = weatherData.hourly.relative_humidity_2m;
+    const dailyPrecipitation = weatherData.daily.precipitation_sum;
+
+    weatherInfo.innerHTML = `
+        <h3>Weather Info for ${state}</h3>
+        <p>Hourly Relative Humidity: ${hourlyHumidity.join(', ')}</p>
+        <p>Daily Precipitation Sum: ${dailyPrecipitation.join(', ')}</p>
+    `;
+};
+
+stateSelect.addEventListener('change', async (event) => {
+    const selectedState = event.target.value;
+    if (selectedState) {
+        const { latitude, longitude } = states[selectedState];
+        const weatherData = await fetchWeatherData(latitude, longitude);
+        displayWeatherData(selectedState, weatherData);
+    } else {
+        weatherInfo.innerHTML = 'State weather Info';
     }
-  
-    const latitudeString = latitudes.join(',');
-    const longitudeString = longitudes.join(',');
-    const dailyRain = 'daily_precipitation'; 
-  
-    return (`https://api.open-meteo.com/v1/forecast?latitude=${latitudeString}&longitude=${longitudeString}&current=relative_humidity_2m&timezone=America%2FNew_York&daily=${dailyRain}`);
-  }
-  
-  
-  function fetchWeatherData(url) {
-    fetch(url)
-      .then(response => response.json())
-      .then(data => {
-        const weatherInfo = document.getElementById('weather-info');
-        weatherInfo.innerHTML = ''; 
-  
-        
-        for (const locationData of data) {
-          const stateName = getLocationName(locationData); 
-          const humidity = locationData.current.relative_humidity_2m;
-          const dailyRain = locationData.daily.precipitation; 
-  
-          
-          weatherInfo.innerHTML += `
-            <h3>${stateName} Weather</h3>
-            <p>Humidity: ${humidity}%</p>
-            <p>Daily Rain: ${dailyRain} mm</p><hr>`;
-        }
-      })
-      .catch(error => {
-        console.error('Error fetching data:', error);
-        weatherInfo.textContent = 'Error fetching weather data.';
-      });
-  }
-  
-  function populateStateSelect() {
-    const stateSelect = document.getElementById('state-select');
-    for (const stateName in states) {
-      const option = document.createElement('option');
-      option.value = stateName;
-      option.textContent = stateName;
-      stateSelect.appendChild(option);
-    }
-  }
-  
-    populateStateSelect();
-  
-    const stateSelect = document.getElementById('state-select');
-  stateSelect.addEventListener('change', () => {
-    const selectedState = stateSelect.value;
-    fetchWeatherData(buildWeatherUrl([selectedState])); 
-  });
-
-
-
-
-    
- 
-  
- 
-  
-  
+});
