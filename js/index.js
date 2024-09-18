@@ -9,43 +9,62 @@ const states = {
     "Michigan": { latitude: 42.7312, longitude: -84.3586 },
     "Georgia": { latitude: 33.0406, longitude: -84.2377 },
     "Washington": { latitude: 47.6062, longitude: -122.3321 }
-};
-
-const stateSelect = document.getElementById('state-select');
-const weatherInfo = document.getElementById('weather-info');
-
-// Populate the dropdown with states
-for (const state in states) {
+  };
+  
+  const stateSelect = document.getElementById('state-select');
+  const weatherInfo = document.getElementById('weather-info');
+  
+  // Populate the dropdown with states
+  for (const state in states) {
     const option = document.createElement('option');
     option.value = state;
     option.textContent = state;
     stateSelect.appendChild(option);
-}
-
-const fetchWeatherData = async (latitude, longitude) => {
-    const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=relative_humidity_2m&daily=precipitation_sum&temperature_unit=fahrenheit&timezone=America%2FNew_York`);
-    const data = await response.json();
-    return data;
-};
-
-const displayWeatherData = (state, weatherData) => {
+  }
+  
+  const fetchWeatherData = async (latitude, longitude) => {
+    try {
+      // Make the fetch request
+      const response = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=relative_humidity_2m&daily=precipitation_sum&temperature_unit=fahrenheit&timezone=America%2FNew_York`);
+  
+      // Check for successful response
+      if (!response.ok) {
+        throw new Error(`HTTP error: ${response.status}`);
+      }
+  
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Error fetching weather data:', error);
+      // Display user-friendly error message
+      weatherInfo.innerHTML = `An error occurred while fetching weather data. Please try again later.`;
+    }
+  };
+  
+  const displayWeatherData = (state, weatherData) => {
     const hourlyHumidity = weatherData.hourly.relative_humidity_2m;
     const dailyPrecipitation = weatherData.daily.precipitation_sum;
-
+  
     weatherInfo.innerHTML = `
-        <h3>Weather Info for ${state}</h3>
-        <p>Hourly Relative Humidity: ${hourlyHumidity.join(', ')}</p>
-        <p>Daily Precipitation Sum: ${dailyPrecipitation.join(', ')}</p>
-    `;
-};
-
-stateSelect.addEventListener('change', async (event) => {
+       <h3>Weather Info for ${state}</h3>
+       <p>Hourly Relative Humidity: ${hourlyHumidity.join(', ')}</p>
+       <p>Daily Precipitation Sum: ${dailyPrecipitation.join(', ')}</p>
+     `;
+  };
+  
+  stateSelect.addEventListener('change', async (event) => {
     const selectedState = event.target.value;
     if (selectedState) {
-        const { latitude, longitude } = states[selectedState];
+      const { latitude, longitude } = states[selectedState];
+      try {
         const weatherData = await fetchWeatherData(latitude, longitude);
         displayWeatherData(selectedState, weatherData);
+      } catch (error) {
+        // Handle errors during weather data display
+        console.error('Error displaying weather data:', error);
+        weatherInfo.innerHTML = `An error occurred while displaying weather information.`;
+      }
     } else {
-        weatherInfo.innerHTML = 'State weather Info';
+      weatherInfo.innerHTML = 'State weather Info';
     }
-});
+  });
