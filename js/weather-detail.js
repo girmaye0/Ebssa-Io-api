@@ -1,4 +1,5 @@
 const temperaturesList = document.getElementById('temperatures-list');
+const loadingMessage = document.getElementById('loading-message'); 
 
 async function fetchStateTemperatures() {
   const states = { // Assuming you have state coordinates in an object
@@ -32,15 +33,20 @@ async function fetchStateTemperatures() {
 
 async function displayTemperatures() {
   try {
+        loadingMessage.style.display = 'block';
+
     const stateTemperatures = await fetchStateTemperatures();
     displayTemperaturesList(stateTemperatures);
   } catch (error) {
-    console.error('Error fetching state temperatures:', error);
-    temperaturesList.textContent = 'Error fetching temperatures.';
+    console.error('Error fetching weather data:', error);
+    temperaturesList.textContent = 'An error occurred while fetching weather data. Please try again later.';
+  } finally {
+        loadingMessage.style.display = 'none';
   }
 }
 
 function displayTemperaturesList(temperatures) {
+  temperaturesList.innerHTML = ''; 
   for (const state in temperatures) {
     const temperature = temperatures[state];
     const listItem = document.createElement('li');

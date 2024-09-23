@@ -1,6 +1,8 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f0f0;
+    background-image: url("Cloudy/pexels-pixabay-531756.jpg"); /* Replace with the path to your cloudy image */
+    background-size: cover;
+    background-position: center;
     margin: 0;
     padding: 20px;
     display: grid;
