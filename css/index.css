@@ -16,18 +16,31 @@ h1, h2 {
     margin-bottom: 20px;
 }
 #weather-info {
-    background-color: skyblue;
-    padding: 20px;
-    border-radius: 50%;
-    width: 900px;
-    height: 600px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    margin-top: 50px;
+  background-color: skyblue;
+  padding: 20px;
+  border-radius: 50%;
+  width: 900px;
+  height: 600px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  margin-top: 50px;
+  animation: moveRightLeft 20s infinite linear; /* Adjust animation properties as needed */
+}
+
+@keyframes moveRightLeft {
+  0% {
+    transform: translateX(0);
   }
+  50% {
+    transform: translateX(600px); 
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
   
   #weather-info h3 {
     margin: 0;
