@@ -9,7 +9,12 @@ const cities = {
   "San Antonio": { latitude: 29.4241, longitude: -98.4936 },
   "San Diego": { latitude: 32.7153, longitude: -117.1611 },
   "Dallas": { latitude: 32.7942, longitude: -96.7699 },
-  "San Jose": { latitude: 37.3382, longitude: -121.8863 }
+  "San Jose": { latitude: 37.3382, longitude: -121.8863 },
+  "Austin": { latitude: 30.2672, longitude: -97.7431 },
+  "Jacksonville": { latitude: 30.3322, longitude: -81.6557 },
+  "San Francisco": { latitude: 37.7749, longitude: -122.4194 },
+  "Columbus": { latitude: 39.9612, longitude: -82.9988 },
+  "Indianapolis": { latitude: 39.7684, longitude: -86.1581 }
 };
 
 const citySelect = document.getElementById('city-select');
